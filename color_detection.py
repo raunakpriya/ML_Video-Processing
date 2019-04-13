@@ -12,10 +12,9 @@ while(1):
 	img = frame
 	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-## mask of green (36,0,0) ~ (70, 255,255)
+## mask 
 	mask1 = cv2.inRange(hsv, (136,87,111), (180, 255,255))
 
-## mask o yellow (15,0,0) ~ (36, 255, 255)
 	mask2 = cv2.inRange(hsv, (99,115,150), (110, 255, 255))
 
 	mask3 = cv2.inRange(hsv, (22,60,200), (60, 255, 255))
