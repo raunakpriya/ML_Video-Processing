@@ -1,112 +1,166 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Apr 12 04:00:23 2019
-
-@author: HP
-"""
-
 import cv2
-import numpy as np
 
-#Capturing the frames with webcam(number 0)
+## Read
+#img = cv2.imread("colorimage.png")
+import numpy as np
 cap = cv2.VideoCapture(0)
 
-#Using while loop to drive program for infinite loops
 while(1):
-    # "frame" will get the next frame in the camera( via cap.)
-    # 'ret' will obtain return value from getting the camera frame, either true or false.
-    ret, frame = cap.read()
-    
-    # Using cv2.cvtColor(input_image, flag), here flag will determine the type of conversion. 
-    # Converting image from BGR To HSV
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    
-    # Defining the Range of Red Color
-    # This creates a mask of red color
-    # Objects found in the frame
-    red_lower = np.array([136,87,111],np.uint8)
-    red_upper = np.array([180,255,255], np.uint8)
-    
-    # Defining the range of blue color
-    blue_lower = np.array([99,115,150],np.uint8)
-    blue_upper = np.array([110,255,255], np.uint8)
-    
-    # Defining the range of the green color
-    green_lower = np.array([22,60,200],np.uint8)
-    green_upper = np.array([60,255,255], np.uint8)
-    
-    
-    
-    
-    # Finding the range of red, blue and green color in the image
-    red = cv2.inRange(hsv, red_lower, red_upper)
-    blue = cv2.inRange(hsv, blue_lower, blue_upper)
-    green = cv2.inRange(hsv, green_lower, green_upper)
-    
-    # Morphological transformation, Dilation
-    # The kernal slides through the image (as in 2D convolution).
-    # A pixel in the original image(either 1 or 0) will be considered 1
-    # only if atlest one pixel under the kernel is '1'.
-    kernel = np.ones((5,5), "uint8")
-    
-    # Print Kernel 
-    red = cv2.dilate(red, kernel)
-    
-    # Bitwise -AND mask and original image
-    res = cv2.bitwise_and(frame, frame, mask = red)
-    blue = cv2.dilate(blue, kernel)
-    
-    # Bitwise -AND mask and original image
-    res1 = cv2.bitwise_and(frame, frame, mask = blue)
-    green = cv2.dilate(green, kernel)
-    
-    # Bitwise -AND mask and original image
-    res2 = cv2.bitwise_and(frame, frame, mask = green)
-    
-  
 
-    # Trackig the Red Color
-    (ret, contours,hierchy) = cv2.findContours(red, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+	ret,frame = cap.read()
+## convert to hsv
+	img = frame
+	hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-    for pic, contour in enumerate(contours):
-        area = cv2.contourArea(contour)
-        if area>300:
-            x,y,w,h = cv2.boundingRect(contour)
-            frame = cv2.rectangle(frame, (x,y), (x+w,y+h), (0,0,255),2)
-            cv2.putText(frame, 'red color', (x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
-        
-    # Tracking the blue color
-    (ret, contours, hierchy) = cv2.findContours(blue, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+## mask of green (36,0,0) ~ (70, 255,255)
+	mask1 = cv2.inRange(hsv, (136,87,111), (180, 255,255))
 
-    for pic, contour in enumerate(contours):
-        area = cv2.contourArea(contour)
-        if area>300:
-            x,y,w,h = cv2.boundingRect(contour)
-            frame = cv2.rectangle(frame, (x,y), (x+w,y+h), (0,0,255),2)
-            cv2.putText(frame, 'blue color', (x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
-    
+## mask o yellow (15,0,0) ~ (36, 255, 255)
+	mask2 = cv2.inRange(hsv, (99,115,150), (110, 255, 255))
 
-    # Tracking the green colors
-    (ret, contours, hierchy) = cv2.findContours(green, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    
-    for pic, contour in enumerate(contours):
-        area = cv2.contourArea(contour)
-        if area>300:
-            x,y,w,h = cv2.boundingRect(contour)
-            frame = cv2.rectangle(frame, (x,y), (x+w,y+h), (0,0,255),2)
-            cv2.putText(frame, 'Green color', (x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
-    
-    # Function used to display the image
-    cv2.imshow("color tracking", frame)
-    
-    # the image window will close on the command 's'
-    if cv2.waitKey(10)& 0xff == ord('s'):
-        cap.release()
-        cv2.destroyAllWindows()
-        break
+	mask3 = cv2.inRange(hsv, (22,60,200), (60, 255, 255))
 
-# Release the captured frame
+	mask4 = cv2.inRange(hsv, (130,26,51), (150, 255, 230))
+
+	mask5 = cv2.inRange(hsv, (0,0,239), (182, 93, 256))
+	
+	mask6 = cv2.inRange(hsv, (11,26,51), (33, 255, 230))
+
+	mask7 = cv2.inRange(hsv, (5,140,28), (26, 265, 164))
+
+	mask8 = cv2.inRange(hsv, (0,0,27), (0, 49, 240))
+
+	mask9 = cv2.inRange(hsv, (10,26,102), (25, 255, 230))
+
+	mask10 = cv2.inRange(hsv, (0,48,80), (20, 255, 255))
+
+	mask11 = cv2.inRange(hsv, (0,0,0), (0, 255, 255))
+
+## final mask and masked
+	mask = cv2.bitwise_or(mask1, mask2)
+	target = cv2.bitwise_and(img,img, mask=mask)
+	(_,contours,hierarchy)=cv2.findContours(mask1,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+	
+	for pic, contour in enumerate(contours):
+		area = cv2.contourArea(contour)
+		if(area>300):
+			
+			x,y,w,h = cv2.boundingRect(contour)	
+			#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
+			cv2.putText(img,"RED color",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
+
+	(_,contours,hierarchy)=cv2.findContours(mask2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+	
+	for pic, contour in enumerate(contours):
+		area = cv2.contourArea(contour)
+		if(area>300):
+			
+			x,y,w,h = cv2.boundingRect(contour)	
+			#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
+			cv2.putText(img,"blue color",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
+
+	(_,contours,hierarchy)=cv2.findContours(mask3,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+	for pic, contour in enumerate(contours):
+		area = cv2.contourArea(contour)
+		if(area>300):
+			
+			x,y,w,h = cv2.boundingRect(contour)	
+			#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
+			cv2.putText(img,"green color",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
+
+	(_,contours,hierarchy)=cv2.findContours(mask4,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+	for pic, contour in enumerate(contours):
+		area = cv2.contourArea(contour)
+		if(area>300):
+			
+			x,y,w,h = cv2.boundingRect(contour)	
+			#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
+			cv2.putText(img,"purple color",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
+	#cv2.imshow("d" , img)
+
+	(_,contours,hierarchy)=cv2.findContours(mask5,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+	for pic, contour in enumerate(contours):
+		area = cv2.contourArea(contour)
+		if(area>300):
+			
+			x,y,w,h = cv2.boundingRect(contour)	
+			#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
+			cv2.putText(img,"white color",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
+	#cv2.imshow("d" , img)
+
+	(_,contours,hierarchy)=cv2.findContours(mask6,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+	for pic, contour in enumerate(contours):
+		area = cv2.contourArea(contour)
+		if(area>300):
+			
+			x,y,w,h = cv2.boundingRect(contour)	
+			#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
+			cv2.putText(img,"yellow color",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
+	#cv2.imshow("d" , img)
+
+	(_,contours,hierarchy)=cv2.findContours(mask7,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+	for pic, contour in enumerate(contours):
+		area = cv2.contourArea(contour)
+		if(area>300):
+			
+			x,y,w,h = cv2.boundingRect(contour)	
+			#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
+			cv2.putText(img,"brown color",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
+	#cv2.imshow("d" , img)
+
+	(_,contours,hierarchy)=cv2.findContours(mask8,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+	for pic, contour in enumerate(contours):
+		area = cv2.contourArea(contour)
+		if(area>300):
+			
+			x,y,w,h = cv2.boundingRect(contour)	
+			#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
+			cv2.putText(img,"gray color",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
+	#cv2.imshow("d" , img)
+
+	(_,contours,hierarchy)=cv2.findContours(mask9,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+	for pic, contour in enumerate(contours):
+		area = cv2.contourArea(contour)
+		if(area>300):
+			
+			x,y,w,h = cv2.boundingRect(contour)	
+			#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
+			cv2.putText(img,"orange color",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
+
+	(_,contours,hierarchy)=cv2.findContours(mask9,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+	for pic, contour in enumerate(contours):
+		area = cv2.contourArea(contour)
+		if(area>300):
+			
+			x,y,w,h = cv2.boundingRect(contour)	
+			#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
+			cv2.putText(img,"skin",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
+
+	
+	(_,contours,hierarchy)=cv2.findContours(mask9,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+	for pic, contour in enumerate(contours):
+		area = cv2.contourArea(contour)
+		if(area>300):
+			
+			x,y,w,h = cv2.boundingRect(contour)	
+			#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
+			cv2.putText(img,"black color",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
+	cv2.imshow("d" , img)
+
+	
+
+	if cv2.waitKey(10) & 0xff == ord('s'):
+		cap.release()
+		cv2.destroyAllWindows()
+		break
 cap.release()
-
-# Destroy all of the HighGUI windows.
 cv2.destroyAllWindows()
