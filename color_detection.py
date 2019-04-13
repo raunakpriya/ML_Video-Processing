@@ -134,7 +134,7 @@ while(1):
 			#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255),2)
 			cv2.putText(img,"orange color",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
 
-	(_,contours,hierarchy)=cv2.findContours(mask9,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+	(_,contours,hierarchy)=cv2.findContours(mask10,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
 	for pic, contour in enumerate(contours):
 		area = cv2.contourArea(contour)
@@ -145,7 +145,7 @@ while(1):
 			cv2.putText(img,"skin",(x,y),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255))
 
 	
-	(_,contours,hierarchy)=cv2.findContours(mask9,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+	(_,contours,hierarchy)=cv2.findContours(mask11,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
 	for pic, contour in enumerate(contours):
 		area = cv2.contourArea(contour)
